@@ -43,7 +43,7 @@ Enumeration
 EndEnumeration
 
 Global hasAnotherChance.b = 6 ; So viele Schleifendurchläufe werden noch erlaubt, wenn eine eigentlich tödliche Kollision statt findet
-Global isDeath.b = #False  
+Global isDead.b = #False  
 
 ExamineDesktops()
   Global width = DesktopWidth(0)
@@ -105,7 +105,7 @@ Procedure sn_direction(x,y,movement,oldDirection)
     newHeadyPos = SnakeElement()\y+y
   
   If Spielfeld(newHeadxPos,newHeadyPos)<>#apple And Spielfeld(newHeadxPos,newHeadyPos)<>#grass
-      isDeath = #True
+      isDead = #True
   Else
    If movement = oldDirection
     ;dann kann es nur horizontal oder vertikal weitergehen
@@ -163,11 +163,11 @@ Procedure sn_direction(x,y,movement,oldDirection)
     
     LastElement(SnakeElement()) ; nicht notwendig
     
-    ;-isDeathO Wenn Schlange 2 Elemente hat wird die Schwanz-Ausmovement falsch berechnet
+    ;-isDeadO Wenn Schlange 2 Elemente hat wird die Schwanz-Ausmovement falsch berechnet
     ;      wenn der Spieler sich der Spieler zuerst entweder nach up oder down bewegt
     ; Workaround: Setze Anfangsmovement auf #left
     
-    If isDeath = #False
+    If isDead = #False
       ;sonst richtet er auch das "kollidierte" Element aus
       If schwanzX > SnakeElement()\x
         Select SnakeElement()\art
@@ -319,28 +319,28 @@ Repeat
        sn_direction(0, 1, #down, oldDirection)
    EndSelect  
  
-  If isDeath = #True
+  If isDead = #True
     If hasAnotherChance > 0
-      isDeath = #False  
+      isDead = #False  
     EndIf
     hasAnotherChance-1
   EndIf
   Delay(75)  
-Until KeyboardPushed(#PB_Key_Escape) Or isDeath = #True
+Until KeyboardPushed(#PB_Key_Escape) Or isDead = #True
 CloseScreen()
 
 Punkte = ListSize(SnakeElement())-2; Die Schlange hatte 2 Anfangsglieder -- jeder Apfel = 1 Punkt
   MessageRequester("Das Spiel ist zu Ende","Du hast "+Str(Punkte)+" Punkte von "+Str(maxSpielfeld)+" erreicht.",#PB_MessageRequester_Ok)
 End
 ; IDE Options = PureBasic 4.51 (Linux - x86)
-; CursorPosition = 267
-; FirstLine = 253
+; CursorPosition = 323
+; FirstLine = 306
 ; Folding = -
 ; EnableUnicode
 ; EnableThread
 ; EnableXP
 ; EnableOnError
 ; Executable = snake_32.exe
-; EnableCompileCount = 280
+; EnableCompileCount = 281
 ; EnableBuildCount = 3
 ; EnableExeConstant
