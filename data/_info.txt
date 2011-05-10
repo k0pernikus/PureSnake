@@ -1,0 +1,21 @@
+    #Feld = 0
+    #Apfel = 1
+    
+    #Schlangen_Kopf_Oben 	== 2 ;usw
+    #Schlangen_Kopf_Unten
+    #Schlangen_Kopf_Links
+    #Schlangen_Kopf_Rechts
+    
+    #Schlangen_Koerper_Gerade_Horizontal
+    #Schlangen_Koerper_Gerade_Vertikal
+    
+    #Schlangen_Koerper_Beuge_Oben_Rechts
+    #Schlangen_Koerper_Beuge_Oben_Links
+    #Schlangen_Koerper_Beuge_Unten_Rechts
+    #Schlangen_Koerper_Beuge_Unten_Links
+    
+    #Schlangen_Schwanz_Oben
+    #Schlangen_Schwanz_Unten
+    #Schlangen_Schwanz_Rechts
+    #Schlangen_Schwanz_Links
+    #Hindernis
