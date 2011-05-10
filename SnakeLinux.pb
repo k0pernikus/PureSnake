@@ -4,7 +4,7 @@ InitSprite() And InitKeyboard()
 
 Enumeration
   ;START SPRITE IDs
-  #grass   =  0						
+  #grass = 0						
   #apple						
   
   #snakeHeadUp
@@ -12,8 +12,8 @@ Enumeration
   #snakeHeadLeft
   #snakeHeadRight
   
-  #snakeBody_Gerade_Horizontal
-  #snakeBody_Gerade_Vertikal
+  #snakeBodyHorizontal
+  #snakeBodyVertical
   
   #snakeBody_Beuge_up_left
   #snakeBody_Beuge_up_right
@@ -22,7 +22,7 @@ Enumeration
   
   #snakeTail_up
   #snakeTail_down
-  #snakeTail_right
+  #snakeTailRight
   #snakeTail_left
   
   #wall
@@ -39,26 +39,26 @@ Enumeration
     #up
     #down
   
-  #spriteLengthInPixel  =  30
+  #spriteLengthInPixel = 30
 EndEnumeration
 
-Global hasAnotherChance.b  =  6 ; So viele Schleifendurchläufe werden noch erlaubt, wenn eine eigentlich tödliche Kollision statt findet
+Global hasAnotherChance.b = 6 ; So viele Schleifendurchläufe werden noch erlaubt, wenn eine eigentlich tödliche Kollision statt findet
 Global isDeath.b = #False  
 
 ExamineDesktops()
-  Global width  =  DesktopWidth(0)
-  Global height  =  DesktopHeight(0)
-  Global depth  =  DesktopDepth(0)
-  Global title$  =  "Yet another snake clone"
+  Global width = DesktopWidth(0)
+  Global height = DesktopHeight(0)
+  Global depth = DesktopDepth(0)
+  Global title$ = "Yet another snake clone"
 
 Global xMax, yMax, maxSpielfeld
-  xMax  =  (width/#spriteLengthInPixel) - 1
-  yMax  =  (height/#spriteLengthInPixel) - 1
+  xMax = (width/#spriteLengthInPixel) - 1
+  yMax = (height/#spriteLengthInPixel) - 1
   
-  maxSpielfeld  =  (yMax-1) * (xMax-1)
+  maxSpielfeld = (yMax-1)  *  (xMax-1)
   
 Structure Eigenschaften ; der einzelnen SnakeElementer
-  art.c ; welches körperteil -- kopf, körper, schwanz und ausrichtung 
+  art.c ; welches körperteil -- kopf, körper, schwanz und ausmovement 
    
   x.c   ; Koordinaten der einzelnen Glieder
   y.c
@@ -99,20 +99,20 @@ Procedure sn_LoadSprites()
     Next  
 EndProcedure
 
-Procedure sn_direction(x,y,richtung,oldDirection)
+Procedure sn_direction(x,y,movement,oldDirection)
   FirstElement(SnakeElement())
-    NeuerKopfX  =  SnakeElement()\x+x
-    NeuerKopfY  =  SnakeElement()\y+y
+    newHeadxPos = SnakeElement()\x+x
+    newHeadyPos = SnakeElement()\y+y
   
-  If Spielfeld(NeuerKopfX,NeuerKopfY)<>#apple And Spielfeld(NeuerKopfX,NeuerKopfY)<>#grass
+  If Spielfeld(newHeadxPos,newHeadyPos)<>#apple And Spielfeld(newHeadxPos,newHeadyPos)<>#grass
       isDeath = #True
   Else
-   If richtung = oldDirection
+   If movement = oldDirection
     ;dann kann es nur horizontal oder vertikal weitergehen
-      If richtung = #left Or richtung = #right
-        SnakeElement()\art  =  #snakeBody_Gerade_Horizontal
+      If movement = #left Or movement = #right
+        SnakeElement()\art = #snakeBodyHorizontal
       Else
-        SnakeElement()\art  =  #snakeBody_Gerade_Vertikal
+        SnakeElement()\art = #snakeBodyVertical
       EndIf
    Else   
    ;dann kommt es zur beugung -- wobei es jeweils zwei möglichkeiten gibt
@@ -121,93 +121,93 @@ Procedure sn_direction(x,y,richtung,oldDirection)
    ;     2 .\ | 3.  /        3. quadrant #snakeBody_Beuge_down_right
    ;                         4. quadrant #snakeBody_Beuge_up_right
    
-    If (oldDirection = #up And richtung = #right) Or (oldDirection = #left And richtung = #down)
-        SnakeElement()\art  =  #snakeBody_Beuge_up_left
-      ElseIf (oldDirection = #down And richtung = #right) Or (oldDirection = #left And richtung = #up)
-        SnakeElement()\art  =  #snakeBody_Beuge_down_left
-      ElseIf (oldDirection = #right And richtung = #up) Or (oldDirection = #down And richtung = #left)
-        SnakeElement()\art  =  #snakeBody_Beuge_down_right
-      ElseIf (oldDirection = #right And richtung = #down) Or (oldDirection = #up And richtung = #left)
-        SnakeElement()\art  =  #snakeBody_Beuge_up_right
-    EndIf
-            
+    If (oldDirection = #up And movement = #right) Or (oldDirection = #left And movement = #down)
+        SnakeElement()\art = #snakeBody_Beuge_up_left
+      ElseIf (oldDirection = #down And movement = #right) Or (oldDirection = #left And movement = #up)
+        SnakeElement()\art = #snakeBody_Beuge_down_left
+      ElseIf (oldDirection = #right And movement = #up) Or (oldDirection = #down And movement = #left)
+        SnakeElement()\art = #snakeBody_Beuge_down_right
+      ElseIf (oldDirection = #right And movement = #down) Or (oldDirection = #up And movement = #left)
+        SnakeElement()\art = #snakeBody_Beuge_up_right
+    EndIf            
    EndIf     
     
-   Select richtung
+   Select movement
       Case #up
-        NeuerKopfTyp  =  #snakeHeadUp
+        newHeadType = #snakeHeadUp
       Case #down
-        NeuerKopfTyp  =  #snakeHeadDown
+        newHeadType = #snakeHeadDown
       Case #right
-        NeuerKopfTyp  =  #snakeHeadRight
+        newHeadType = #snakeHeadRight
       Case #left
-        NeuerKopfTyp  =  #snakeHeadLeft
+        newHeadType = #snakeHeadLeft
     EndSelect
     
   InsertElement(SnakeElement())
-    SnakeElement()\art  =  NeuerKopfTyp
-    SnakeElement()\x    =  NeuerKopfX
-    SnakeElement()\y    =  NeuerKopfY
-    Spielfeld(NeuerKopfX,NeuerKopfY) = #snake  ; "Registrierung" im Spielffeld
+    SnakeElement()\art = newHeadType
+    SnakeElement()\x = newHeadxPos
+    SnakeElement()\y = newHeadyPos
+    Spielfeld(newHeadxPos,newHeadyPos) = #snake  ; "Registrierung" im Spielffeld
     
-  If NeuerKopfX  =  ApfelX And NeuerKopfY = ApfelY
+  If newHeadxPos = ApfelX And newHeadyPos = ApfelY
     ;Apfel wurde gegessen -- berechne Position des neuen
     sn_positionApple()
   Else
     ;Apfel wurde nicht gegessen, nutze den Schwanz als "Radierer" 
   
     LastElement(SnakeElement())
-      schwanzX  =  SnakeElement()\x
-      schwanzY  =  SnakeElement()\y
+      schwanzX = SnakeElement()\x
+      schwanzY = SnakeElement()\y
       Spielfeld(schwanzX,schwanzY) = #grass    
       DeleteElement(SnakeElement())  
     
     LastElement(SnakeElement()) ; nicht notwendig
     
-    ;-isDeathO Wenn Schlange 2 Elemente hat wird die Schwanz-Ausrichtung falsch berechnet
+    ;-isDeathO Wenn Schlange 2 Elemente hat wird die Schwanz-Ausmovement falsch berechnet
     ;      wenn der Spieler sich der Spieler zuerst entweder nach up oder down bewegt
-    ; Workaround: Setze Anfangsrichtung auf #left
+    ; Workaround: Setze Anfangsmovement auf #left
     
     If isDeath = #False
       ;sonst richtet er auch das "kollidierte" Element aus
       If schwanzX > SnakeElement()\x
         Select SnakeElement()\art
           Case #snakeBody_Beuge_down_left
-            SnakeElement()\art  =  #snakeTail_down  
+            SnakeElement()\art = #snakeTail_down  
           Case #snakeBody_Beuge_up_left
-            SnakeElement()\art =  #snakeTail_up    
+            SnakeElement()\art = #snakeTail_up    
           Default
-            SnakeElement()\art  =  #snakeTail_right
+            SnakeElement()\art = #snakeTailRight
         EndSelect
        ElseIf  schwanzX < SnakeElement()\x
         Select SnakeElement()\art
           Case #snakeBody_Beuge_down_right
-            SnakeElement()\art  =  #snakeTail_down  
+            SnakeElement()\art = #snakeTail_down  
           Case #snakeBody_Beuge_up_right
-            SnakeElement()\art =  #snakeTail_up
+            SnakeElement()\art = #snakeTail_up
           Default
-            SnakeElement()\art  =  #snakeTail_left
+            SnakeElement()\art = #snakeTail_left
         EndSelect
       ElseIf  schwanzY > SnakeElement()\y
          Select SnakeElement()\art
           Case #snakeBody_Beuge_up_right
-            SnakeElement()\art  =  #snakeTail_right
+            SnakeElement()\art = #snakeTailRight
           Case #snakeBody_Beuge_up_left
-            SnakeElement()\art  =  #snakeTail_left
+            SnakeElement()\art = #snakeTail_left
           Default
-              SnakeElement()\art  =  #snakeTail_down
+              SnakeElement()\art = #snakeTail_down
          EndSelect
       ElseIf  schwanzY < SnakeElement()\y
         Select SnakeElement()\art
           Case #snakeBody_Beuge_down_right
-            SnakeElement()\art  =  #snakeTail_right
+            SnakeElement()\art = #snakeTailRight
           Case #snakeBody_Beuge_down_left
-            SnakeElement()\art  =  #snakeTail_left
+            SnakeElement()\art = #snakeTail_left
           Default
-            SnakeElement()\art  =  #snakeTail_up      
+            SnakeElement()\art = #snakeTail_up      
         EndSelect
       EndIf
     EndIf
+    
     hasAnotherChance = 6
   EndIf
 EndIf
@@ -218,7 +218,7 @@ Procedure sn_createBackgroundSprite()
   UseBuffer(#background)
   For x = 0 To xMax
     For y = 0 To yMax
-      DisplaySprite(Spielfeld(x,y), x * #spriteLengthInPixel, y * #spriteLengthInPixel)
+      DisplaySprite(Spielfeld(x, y), x  *  #spriteLengthInPixel, y  *  #spriteLengthInPixel)
     Next
   Next
   
@@ -231,23 +231,23 @@ If OpenScreen(width, height, depth, title$)
     sn_LoadSprites() 
     sn_createBackgroundSprite()
   Else
-    MessageRequester("Error","Konnte kein Fenster öffnen",#PB_MessageRequester_Ok)
+    MessageRequester("Error", "Konnte kein Fenster öffnen", #PB_MessageRequester_Ok)
     End
 EndIf
 
 Procedure sn_createSnake()
 
 AddElement(SnakeElement())
-  SnakeElement()\art   =  #snakeHeadLeft
-  SnakeElement()\x     =  xMax/2
-  SnakeElement()\y     =  yMax/2
+  SnakeElement()\art = #snakeHeadLeft
+  SnakeElement()\x = xMax/2
+  SnakeElement()\y = yMax/2
 AddElement(SnakeElement())
-  SnakeElement()\art   =  #snakeTail_right
-  SnakeElement()\x     =  xMax/2+1
-  SnakeElement()\y     =  yMax/2
+  SnakeElement()\art = #snakeTailRight
+  SnakeElement()\x = xMax/2+1
+  SnakeElement()\y = yMax/2
   
 ForEach SnakeElement()
-  Spielfeld(SnakeElement()\x,SnakeElement()\y)  =  #snake
+  Spielfeld(SnakeElement()\x,SnakeElement()\y) = #snake
 Next
 
 EndProcedure
@@ -273,8 +273,8 @@ sn_createSnake()
 sn_positionApple()
 
 
-;workaround des Ausrichtungsbug
-direction  =  #left
+;workaround des Ausmovementsbug
+direction = #left
 
 
 ;-Hauptschleife
@@ -282,9 +282,9 @@ Repeat
   
   DisplaySprite(#background,0,0)
   ForEach SnakeElement()
-    DisplayTransparentSprite(SnakeElement()\art,SnakeElement()\x*#spriteLengthInPixel,SnakeElement()\y*#spriteLengthInPixel)
+    DisplayTransparentSprite(SnakeElement()\art,SnakeElement()\x * #spriteLengthInPixel,SnakeElement()\y * #spriteLengthInPixel)
   Next
-  DisplayTransparentSprite(#apple,ApfelX*#spriteLengthInPixel,ApfelY*#spriteLengthInPixel)
+  DisplayTransparentSprite(#apple,ApfelX * #spriteLengthInPixel,ApfelY * #spriteLengthInPixel)
   FlipBuffers()
   
   oldDirection = direction
@@ -292,19 +292,19 @@ Repeat
   ExamineKeyboard()  
   If KeyboardPushed(#PB_Key_A) Or KeyboardPushed(#PB_Key_Left)
     If direction <>#right:
-      direction  =  #left
+      direction = #left
     EndIf
   ElseIf KeyboardPushed(#PB_Key_D) Or KeyboardPushed(#PB_Key_Right)
     If direction <> #left
-      direction  =  #right
+      direction = #right
     EndIf
   ElseIf KeyboardReleased(#PB_Key_W) Or KeyboardPushed(#PB_Key_Down)
     If direction <> #down
-      direction  =  #up
+      direction = #up
     EndIf
   ElseIf KeyboardPushed(#PB_Key_S) Or KeyboardPushed(#PB_Key_Up) 
     If direction <> #up
-      direction  =  #down
+      direction = #down
     EndIf
   EndIf
   
@@ -326,21 +326,21 @@ Repeat
     hasAnotherChance-1
   EndIf
   Delay(75)  
-Until KeyboardPushed(#PB_Key_Escape) Or isDeath  =  #True
+Until KeyboardPushed(#PB_Key_Escape) Or isDeath = #True
 CloseScreen()
 
-Punkte  =  ListSize(SnakeElement())-2; Die Schlange hatte 2 Anfangsglieder -- jeder Apfel  =  1 Punkt
+Punkte = ListSize(SnakeElement())-2; Die Schlange hatte 2 Anfangsglieder -- jeder Apfel = 1 Punkt
   MessageRequester("Das Spiel ist zu Ende","Du hast "+Str(Punkte)+" Punkte von "+Str(maxSpielfeld)+" erreicht.",#PB_MessageRequester_Ok)
 End
 ; IDE Options = PureBasic 4.51 (Linux - x86)
-; CursorPosition = 328
-; FirstLine = 309
+; CursorPosition = 267
+; FirstLine = 253
 ; Folding = -
 ; EnableUnicode
 ; EnableThread
 ; EnableXP
 ; EnableOnError
 ; Executable = snake_32.exe
-; EnableCompileCount = 275
+; EnableCompileCount = 280
 ; EnableBuildCount = 3
 ; EnableExeConstant
